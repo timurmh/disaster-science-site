@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Disaster Science</title>
+<style>
+html,body{margin:0;padding:0;width:100%;background:#030407;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;color:#F2F5FA}
+body{overflow-x:hidden}
+*{box-sizing:border-box}
+a{color:inherit}
+
+/* ---------- HERO ---------- */
+#hero{position:relative;width:100%;height:100vh;min-height:640px;overflow:hidden;background:#030407}
+#scene{position:absolute;inset:0;display:block;z-index:1}
+#topbar{position:absolute;top:0;left:0;right:0;z-index:26;display:flex;align-items:center;justify-content:space-between;padding:20px 28px;gap:16px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;white-space:nowrap}
+.brand-logo{height:34px;width:24px;display:block;filter:drop-shadow(0 0 10px rgba(127,180,255,.25))}
+.brand-word{font-size:13px;font-weight:300;letter-spacing:.22em;text-transform:uppercase;color:#F2F5FA}
+.brand-word strong{font-weight:500}
+#nav{display:flex;gap:4px;padding:5px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4)}
+.nav-link{padding:9px 20px;border-radius:999px;font-size:13px;font-weight:400;color:rgba(230,236,246,.72);text-decoration:none;white-space:nowrap;transition:background .25s ease,color .25s ease}
+.nav-link:hover{color:#fff;background:rgba(255,255,255,.07)}
+.nav-link.active{background:rgba(255,255,255,.92);color:#0B0F16;font-weight:500}
+#topright{display:flex;align-items:center;gap:10px}
+.contact-btn{display:flex;align-items:center;gap:9px;padding:10px 20px;border-radius:999px;background:rgba(255,255,255,.92);color:#0B0F16;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background .25s ease}
+.contact-btn:hover{background:#fff}
+.contact-btn .dot{width:8px;height:8px;border-radius:50%;background:#4A8DE0}
+#lang{position:relative}
+#lang-btn{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);color:#EDF2F9;font-size:12px;letter-spacing:.08em;cursor:pointer;font-family:inherit}
+#lang-btn:hover{background:rgba(255,255,255,.10)}
+.flag{display:block;width:18px;height:13px;border-radius:2.5px;overflow:hidden;flex-shrink:0}
+.flag svg{display:block;width:100%;height:100%}
+#lang-btn .chev{width:10px;height:10px;opacity:.6;transition:transform .25s ease}
+#lang.open #lang-btn .chev{transform:rotate(180deg)}
+#lang-menu{position:absolute;right:0;top:calc(100% + 8px);min-width:176px;background:rgba(12,16,24,.85);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(30px) saturate(1.4);-webkit-backdrop-filter:blur(30px) saturate(1.4);border-radius:14px;padding:6px;opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .25s ease,transform .3s cubic-bezier(.2,.8,.2,1);z-index:40}
+#lang.open #lang-menu{opacity:1;transform:none;pointer-events:auto}
+.lang-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;font-size:12px;color:rgba(230,236,246,.8);cursor:pointer;transition:background .2s ease,color .2s ease}
+.lang-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.lang-item.sel{background:rgba(255,255,255,.06);color:#fff}
+#overlay{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;justify-content:center;padding:0 7vw;pointer-events:none}
+#overlay>*{pointer-events:auto}
+.eyebrow{font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:#7FB4FF;font-weight:400;margin:0 0 22px}
+#hero h1{font-size:clamp(34px,5.2vw,74px);line-height:1.06;font-weight:200;letter-spacing:-.01em;color:#F4F6FA;margin:0 0 26px;max-width:12em}
+#hero h1 em{font-style:normal;font-weight:500}
+.sub{font-size:clamp(13px,1.1vw,16px);line-height:1.7;color:rgba(220,228,240,.62);font-weight:300;max-width:34em;margin:0}
+#hint{position:absolute;left:50%;bottom:34px;z-index:20;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:12px}
+.hint-label{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.hint-track{width:1px;height:44px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+.hint-track::after{content:'';position:absolute;top:-50%;left:0;width:100%;height:50%;background:linear-gradient(to bottom,transparent,#7FB4FF);animation:drop 1.8s ease-in-out infinite}
+@keyframes drop{to{top:110%}}
+
+/* ---------- SHARED SECTION ---------- */
+.dark-sec{position:relative;z-index:2;padding:84px 6vw;box-sizing:border-box;max-width:1280px;margin:0 auto}
+.sec-eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#7FB4FF;margin:0 0 14px}
+.sec-title{font-size:clamp(26px,3.4vw,46px);font-weight:200;letter-spacing:-.01em;color:#F2F5FA;margin:0 0 40px;max-width:17em;line-height:1.1}
+.sec-title em{font-style:normal;font-weight:500}
+.sec-lead{font-size:clamp(15px,1.5vw,20px);font-weight:300;line-height:1.7;color:rgba(220,228,240,.68);max-width:38em;margin:0}
+.linkable{cursor:pointer;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.linkable:hover{transform:translateY(-3px)}
+.sec-cta{display:inline-flex;align-items:center;gap:8px;margin-top:30px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#7FB4FF;text-decoration:none;font-weight:500}
+.sec-cta svg{width:15px;height:15px;transition:transform .3s}
+.linkable:hover .sec-cta svg,.sec-cta:hover svg{transform:translateX(4px)}
+a.split-text{text-decoration:none}
+a.split-text .split-title{transition:color .25s}
+a.split-text:hover .split-title{color:#fff}
+a.split-text .learn{display:inline-flex;align-items:center;gap:7px;margin-top:14px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#7FB4FF;font-weight:500}
+a.split-text .learn svg{width:14px;height:14px;transition:transform .3s}
+a.split-text:hover .learn svg{transform:translateX(4px)}
+.glass{border-radius:20px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);box-sizing:border-box}
+.media-window{border-radius:20px;min-height:230px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.09);background:#060b12;box-sizing:border-box;display:block}
+.media-window>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.mw-cap{position:absolute;left:20px;bottom:16px;z-index:2;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:rgba(222,233,248,.78);font-weight:500;display:flex;align-items:center;gap:8px}
+.mw-cap .d{width:6px;height:6px;border-radius:50%;background:#7FB4FF;box-shadow:0 0 10px #7FB4FF}
+.mw-cap.g .d{background:#6FE0B8;box-shadow:0 0 10px #6FE0B8}
+.zz-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch;margin-bottom:20px}
+.stat-card{padding:32px 30px;display:flex;flex-direction:column;justify-content:center}
+.stat-kicker{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(200,212,230,.55);margin:0 0 14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.10)}
+.stat-num{font-size:clamp(48px,5.4vw,82px);font-weight:200;letter-spacing:-.02em;color:#F4F7FC;margin:0 0 16px;line-height:1}
+.stat-num .u{font-size:.42em;font-weight:300;color:rgba(220,228,240,.6)}
+.stat-num .ar{color:#7FB4FF;font-weight:300}
+.stat-desc{font-size:14px;line-height:1.6;margin:0;font-weight:300;color:rgba(210,220,234,.62)}
+.stats-src{margin:26px 2px 0;font-size:10px;color:rgba(160,175,195,.5);letter-spacing:.04em}
+.split-text{padding:8px 4px;display:flex;flex-direction:column;justify-content:center}
+.split-title{font-size:clamp(20px,2.2vw,30px);font-weight:400;color:#EEF2F8;margin:0 0 14px;line-height:1.2}
+.split-title .ic{display:inline-flex;margin-right:10px;color:#7FB4FF;vertical-align:-3px}
+.split-body{font-size:14px;line-height:1.7;font-weight:300;color:rgba(210,220,234,.66);margin:0}
+.cycle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+.cycle-chip{padding:22px 18px;display:flex;flex-direction:column;gap:10px}
+.cycle-chip .ci{width:38px;height:38px;border-radius:11px;background:rgba(127,180,255,.12);border:1px solid rgba(127,180,255,.22);display:flex;align-items:center;justify-content:center;color:#9CC4FF}
+.cycle-chip .ct{font-size:14px;font-weight:500;color:#EEF2F8;margin:0}
+.cycle-chip .cd{font-size:12px;line-height:1.5;color:rgba(200,212,230,.55);margin:0}
+.cta-sec{text-align:center;padding:96px 6vw;position:relative;z-index:2}
+.cta-title{font-size:clamp(28px,4vw,56px);font-weight:200;color:#F4F7FC;margin:0 auto 30px;max-width:16em;line-height:1.12}
+.cta-btn{display:inline-flex;align-items:center;gap:10px;padding:15px 32px;border-radius:999px;background:rgba(255,255,255,.94);color:#0B0F16;font-size:15px;font-weight:500;text-decoration:none;transition:background .25s ease,transform .25s ease}
+.cta-btn:hover{background:#fff;transform:translateY(-2px)}
+.cta-btn .dot{width:8px;height:8px;border-radius:50%;background:#4A8DE0}
+.footer{position:relative;z-index:2;border-top:1px solid rgba(255,255,255,.09);padding:54px 6vw 40px;max-width:1280px;margin:0 auto;box-sizing:border-box}
+.footer-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:30px;margin-bottom:40px}
+.footer-brand{display:inline-flex;align-items:center;gap:13px;font-size:21px;letter-spacing:.16em;text-transform:uppercase;color:#F2F5FA;font-weight:300;text-decoration:none}
+.footer-brand .brand-logo{height:32px;width:23px;flex-shrink:0}
+.footer-brand strong{font-weight:600}
+.footer-tag{font-size:12px;color:rgba(200,210,225,.5);margin-top:10px;max-width:24em;line-height:1.6}
+.footer-links{display:flex;gap:46px;flex-wrap:wrap}
+.footer-col h4{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(160,175,195,.6);margin:0 0 14px;font-weight:500}
+.footer-col a{display:block;font-size:13px;color:rgba(215,224,238,.7);text-decoration:none;margin-bottom:9px;transition:color .2s ease}
+.footer-col a:hover{color:#fff}
+.footer-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:11px;color:rgba(150,165,185,.5);border-top:1px solid rgba(255,255,255,.07);padding-top:22px}
+
+@media (max-width:900px){#nav{display:none}}
+@media (max-width:760px){
+  .zz-row{grid-template-columns:1fr}
+  .zz-row .media-window{min-height:170px}
+  .zz-row .mobile-first{order:-1}
+  #overlay{justify-content:flex-start;padding-top:20vh}
+  .contact-btn{display:none}
+}
+@media (prefers-reduced-motion:reduce){.hint-track::after{animation:none}}
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <canvas id="scene"></canvas>
+
+  <div id="topbar">
+    <a class="brand" href="index.html" aria-label="Disaster Science">
+      <svg class="brand-logo" viewBox="0 0 40 56" fill="none" stroke="#7FB4FF" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4c-1.6 5-9 9.5-9 17.5 0 6.4 4 10.5 9 10.5s9-4.1 9-10.5"/><path d="M20 14v38"/></svg>
+      <span class="brand-word"><span>Disaster</span> <strong>Science</strong></span>
+    </a>
+    <nav id="nav">
+      <a class="nav-link active" data-nav="0" href="#hero">Home</a>
+      <a class="nav-link" data-nav="1" href="disaster-risk-management.html">DRM</a>
+      <a class="nav-link" data-nav="2" href="nature-based-solutions.html">Nature</a>
+      <a class="nav-link" data-nav="3" href="research.html">Research</a>
+      <a class="nav-link" data-nav="4" href="https://www.disastersci.com/insights" target="_top">Insights</a>
+    </nav>
+    <div id="topright">
+      <div id="lang">
+        <button id="lang-btn" aria-label="Language">
+          <span class="flag" id="lang-flag"></span>
+          <span id="lang-code">EN</span>
+          <svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3.5l3 3 3-3"/></svg>
+        </button>
+        <div id="lang-menu"></div>
+      </div>
+      <a class="contact-btn" id="contact-btn" href="contact.html"><span id="contact-txt">Contact us</span><span class="dot"></span></a>
+    </div>
+  </div>
+
+  <div id="overlay">
+    <p class="eyebrow" data-i18n="eyebrow">Solutions for Tomorrow</p>
+    <h1 data-i18n-html="title">When disaster strikes, <em>preparedness</em> decides everything.</h1>
+    <p class="sub" data-i18n="sub">Disaster risk management and nature-based solutions — helping communities prepare, respond, and recover.</p>
+  </div>
+
+  <div id="hint">
+    <span class="hint-label" data-i18n="hint">Scroll</span>
+    <div class="hint-track"></div>
+  </div>
+</section>
+
+<!-- ============ 02 · STATISTICS ============ -->
+<section class="dark-sec">
+  <p class="sec-eyebrow" data-i18n="stEyebrow">The cost of unpreparedness</p>
+  <h2 class="sec-title" data-i18n="stTitle">The cost of unpreparedness — and what changes it.</h2>
+  <div class="zz-row">
+    <div class="glass stat-card">
+      <p class="stat-kicker" data-i18n="s1k">Protection gap</p>
+      <p class="stat-num">57%</p>
+      <p class="stat-desc" data-i18n="s1d">Of 2024 disaster losses went uninsured — communities absorbed the blow themselves.</p>
+    </div>
+    <div class="media-window">
+      <svg viewBox="0 0 640 460" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="aBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1622"/><stop offset="1" stop-color="#050a11"/></linearGradient><radialGradient id="aGlow" cx="72%" cy="24%" r="60%"><stop offset="0" stop-color="#1d3d63"/><stop offset="1" stop-color="#1d3d63" stop-opacity="0"/></radialGradient><linearGradient id="aLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4d84c8" stop-opacity="0"/><stop offset=".5" stop-color="#7FB4FF" stop-opacity=".9"/><stop offset="1" stop-color="#4d84c8" stop-opacity="0"/></linearGradient></defs><rect width="640" height="460" fill="url(#aBg)"/><rect width="640" height="460" fill="url(#aGlow)"/><g fill="none" stroke="#7FB4FF"><path d="M-20 70 C120 40 220 96 360 70 C470 50 560 84 660 66" stroke-opacity=".16"/><path d="M-20 118 C120 92 230 150 360 120 C480 96 560 132 660 116" stroke-opacity=".22"/><path d="M-20 172 C130 146 230 208 370 176 C490 150 570 190 660 172" stroke-opacity=".30" stroke-width="1.2"/><path d="M-20 232 C130 204 240 272 380 236 C500 208 575 250 660 232" stroke-opacity=".42" stroke-width="1.3"/><path d="M-20 300 C140 270 250 344 390 304 C505 272 580 316 660 298" stroke-opacity=".55" stroke-width="1.5"/><path d="M-20 300 C140 270 250 344 390 304 C505 272 580 316 660 298" stroke="url(#aLine)" stroke-width="2"/><path d="M-20 372 C150 340 260 416 400 376 C515 344 585 388 660 368" stroke-opacity=".28" stroke-width="1.2"/></g><g fill="#7FB4FF"><circle cx="392" cy="304" r="3.4"/><circle cx="392" cy="304" r="8" fill="none" stroke="#7FB4FF" stroke-opacity=".5"/></g></svg>
+      <span class="mw-cap"><span class="d"></span><span data-i18n="vizCoast">Coastal exposure</span></span>
+    </div>
+  </div>
+  <div class="zz-row">
+    <div class="media-window mobile-first">
+      <svg viewBox="0 0 640 460" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="fBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1521"/><stop offset="1" stop-color="#05090f"/></linearGradient><radialGradient id="fGlow" cx="80%" cy="18%" r="66%"><stop offset="0" stop-color="#1d3f66"/><stop offset="1" stop-color="#1d3f66" stop-opacity="0"/></radialGradient><linearGradient id="fArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FB4FF" stop-opacity=".28"/><stop offset="1" stop-color="#7FB4FF" stop-opacity="0"/></linearGradient><linearGradient id="fLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5f96da" stop-opacity=".5"/><stop offset="1" stop-color="#bcd9ff"/></linearGradient></defs><rect width="640" height="460" fill="url(#fBg)"/><rect width="640" height="460" fill="url(#fGlow)"/><g stroke="#5f86bd" stroke-opacity=".10"><path d="M0 110H640M0 190H640M0 270H640M0 350H640"/></g><path d="M40 372 C150 356 210 346 300 300 C378 260 430 196 600 96 L600 420 L40 420 Z" fill="url(#fArea)"/><path d="M40 372 C150 356 210 346 300 300 C378 260 430 196 600 96" fill="none" stroke="url(#fLine)" stroke-width="2.4" stroke-linecap="round"/><g fill="#7FB4FF"><circle cx="40" cy="372" r="3"/><circle cx="300" cy="300" r="2.6"/></g><circle cx="600" cy="96" r="5.5" fill="#eaf3ff"/><circle cx="600" cy="96" r="12" fill="none" stroke="#7FB4FF" stroke-opacity=".55"/></svg>
+      <span class="mw-cap"><span class="d"></span><span data-i18n="vizReturn">Return on readiness</span></span>
+    </div>
+    <div class="glass stat-card">
+      <p class="stat-kicker" data-i18n="s2k">Preparedness pays</p>
+      <p class="stat-num">$1<span class="ar"> &rarr; </span>$13</p>
+      <p class="stat-desc" data-i18n="s2d">Every dollar invested in preparedness saves thirteen after disaster strikes.</p>
+    </div>
+  </div>
+  <div class="zz-row">
+    <div class="glass stat-card">
+      <p class="stat-kicker" data-i18n="s3k">Powered by nature</p>
+      <p class="stat-num">$65<span class="u" data-i18n="s3u"> billion/yr</span></p>
+      <p class="stat-desc" data-i18n="s3d">In flood damage is prevented by mangroves each year — nature already works as a shield.</p>
+    </div>
+    <div class="media-window">
+      <svg viewBox="0 0 640 460" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="bBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1a17"/><stop offset="1" stop-color="#050f0c"/></linearGradient><radialGradient id="bGlow" cx="32%" cy="30%" r="62%"><stop offset="0" stop-color="#18513f"/><stop offset="1" stop-color="#18513f" stop-opacity="0"/></radialGradient></defs><rect width="640" height="460" fill="url(#bBg)"/><rect width="640" height="460" fill="url(#bGlow)"/><g fill="none" stroke="#6FE0B8" stroke-linecap="round"><path d="M320 470 L320 250" stroke-opacity=".55" stroke-width="2"/><path d="M320 300 C300 270 250 260 210 230 C180 208 150 210 120 190" stroke-opacity=".4" stroke-width="1.5"/><path d="M320 300 C340 270 400 262 445 232 C482 208 515 212 545 188" stroke-opacity=".4" stroke-width="1.5"/><path d="M320 340 C300 322 260 320 232 296" stroke-opacity=".3" stroke-width="1.3"/><path d="M320 340 C346 322 392 320 424 296" stroke-opacity=".3" stroke-width="1.3"/><path d="M210 230 C196 210 190 196 196 176" stroke-opacity=".3"/><path d="M210 230 C224 214 240 210 258 214" stroke-opacity=".3"/><path d="M445 232 C458 212 462 198 456 178" stroke-opacity=".3"/><path d="M445 232 C430 216 414 212 396 216" stroke-opacity=".3"/><path d="M120 190 C108 178 104 168 108 154" stroke-opacity=".22"/><path d="M545 188 C556 176 560 166 556 152" stroke-opacity=".22"/></g><g fill="#8FF0C8"><circle cx="196" cy="176" r="2.6"/><circle cx="258" cy="214" r="2.2"/><circle cx="108" cy="154" r="2.2"/><circle cx="456" cy="178" r="2.6"/><circle cx="396" cy="216" r="2.2"/><circle cx="556" cy="152" r="2.2"/><circle cx="232" cy="296" r="2.2"/><circle cx="424" cy="296" r="2.2"/></g><g fill="none" stroke="#6FE0B8" stroke-opacity=".14"><path d="M-20 400 C160 372 300 384 480 366 C560 358 610 366 660 358"/><path d="M-20 430 C160 404 300 416 480 398 C560 390 610 398 660 392"/></g></svg>
+      <span class="mw-cap g"><span class="d"></span><span data-i18n="vizShield">Nature as shield</span></span>
+    </div>
+  </div>
+  <p class="stats-src" data-i18n="src">Sources: Swiss Re Institute (2024) · U.S. Chamber of Commerce / Allstate · Menéndez et al., Scientific Reports (2020)</p>
+  <a class="sec-cta" href="research.html" data-i18n="learnResearch">See the science behind our work <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+</section>
+
+<!-- ============ 03 · OUR APPROACH ============ -->
+<section class="dark-sec linkable" onclick="location.href='nature-based-solutions.html'">
+  <p class="sec-eyebrow" data-i18n="apEyebrow">Our approach</p>
+  <h2 class="sec-title" data-i18n="apTitle">We design with the planet, not against it.</h2>
+  <p class="sec-lead" data-i18n="apLead">By restoring the balance between human development and natural systems, we create environments that heal, protect, and empower communities.</p>
+  <a class="sec-cta" href="nature-based-solutions.html" data-i18n="learnNature">Explore nature-based solutions <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+</section>
+
+<!-- ============ 04 · TWO DIRECTIONS ============ -->
+<section class="dark-sec">
+  <div class="zz-row">
+    <a class="split-text" href="disaster-risk-management.html">
+      <p class="split-title"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span><span data-i18n="p1title">Disaster risk management</span></p>
+      <p class="split-body" data-i18n="p1body">We help communities and organizations prepare for, respond to, and recover from disasters — comprehensive planning, training, and on-site support for resilience and rapid recovery.</p>
+      <span class="learn" data-i18n="learn">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <div class="media-window">
+      <svg viewBox="0 0 640 460" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="cBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1420"/><stop offset="1" stop-color="#05090f"/></linearGradient><radialGradient id="cSweep" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#7FB4FF" stop-opacity=".28"/><stop offset="1" stop-color="#7FB4FF" stop-opacity="0"/></radialGradient><radialGradient id="cCore" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#bcd9ff" stop-opacity=".9"/><stop offset="1" stop-color="#7FB4FF" stop-opacity="0"/></radialGradient></defs><rect width="640" height="460" fill="url(#cBg)"/><g stroke="#5f86bd" stroke-opacity=".10"><path d="M0 60H640M0 130H640M0 200H640M0 270H640M0 340H640M0 410H640"/><path d="M80 0V460M160 0V460M240 0V460M320 0V460M400 0V460M480 0V460M560 0V460"/></g><g transform="translate(320,230)"><circle r="150" fill="url(#cSweep)"/><g fill="none" stroke="#7FB4FF"><circle r="42" stroke-opacity=".5"/><circle r="82" stroke-opacity=".34"/><circle r="122" stroke-opacity=".22"/><circle r="162" stroke-opacity=".12"/></g><g fill="none" stroke="#7FB4FF" stroke-opacity=".16"><path d="M-165 0H165M0 -165V165M-117 -117L117 117M117 -117L-117 117"/></g><path d="M0 0 L150 -52 A159 159 0 0 1 150 52 Z" fill="url(#cSweep)"/><circle r="6" fill="url(#cCore)"/><circle r="2.6" fill="#eaf3ff"/><g fill="#9CC4FF"><circle cx="70" cy="-40" r="2.6"/><circle cx="-52" cy="64" r="2.2"/><circle cx="104" cy="46" r="2.2"/><circle cx="-96" cy="-30" r="2"/></g><circle cx="70" cy="-40" r="12" fill="none" stroke="#7FB4FF" stroke-opacity=".4"/></g></svg>
+      <span class="mw-cap"><span class="d"></span><span data-i18n="vizRisk">Risk, mapped</span></span>
+    </div>
+  </div>
+  <div class="zz-row" style="margin-bottom:0;">
+    <div class="media-window mobile-first">
+      <svg viewBox="0 0 640 460" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="dBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1a15"/><stop offset="1" stop-color="#050f0b"/></linearGradient><radialGradient id="dGlow" cx="68%" cy="72%" r="60%"><stop offset="0" stop-color="#1a5540"/><stop offset="1" stop-color="#1a5540" stop-opacity="0"/></radialGradient><linearGradient id="dLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5fd0a8" stop-opacity="0"/><stop offset=".5" stop-color="#8FF0C8" stop-opacity=".9"/><stop offset="1" stop-color="#5fd0a8" stop-opacity="0"/></linearGradient></defs><rect width="640" height="460" fill="url(#dBg)"/><rect width="640" height="460" fill="url(#dGlow)"/><g fill="none" stroke="#6FE0B8"><path d="M-20 400 C120 360 200 420 340 384 C470 350 560 392 660 360" stroke-opacity=".5" stroke-width="1.4"/><path d="M-20 400 C120 360 200 420 340 384 C470 350 560 392 660 360" stroke="url(#dLine)" stroke-width="2"/><path d="M-20 330 C120 296 210 350 350 318 C480 288 560 326 660 300" stroke-opacity=".4" stroke-width="1.3"/><path d="M-20 262 C120 232 220 284 360 254 C485 228 565 262 660 240" stroke-opacity=".3" stroke-width="1.2"/><path d="M-20 196 C130 170 230 220 370 194 C490 172 566 202 660 184" stroke-opacity=".22"/><path d="M-20 136 C140 114 240 160 380 138 C495 120 568 146 660 132" stroke-opacity=".15"/></g><g fill="none" stroke="#8FF0C8" stroke-linecap="round"><path d="M300 384 C304 340 300 300 316 268 C330 240 356 226 356 226" stroke-opacity=".5" stroke-width="1.6"/><path d="M330 300 C346 286 372 284 392 268" stroke-opacity=".38" stroke-width="1.2"/><path d="M318 330 C300 320 280 320 262 306" stroke-opacity=".38" stroke-width="1.2"/><path d="M338 262 C352 250 368 248 384 234" stroke-opacity=".3"/></g><g fill="#8FF0C8"><circle cx="356" cy="226" r="3"/><circle cx="392" cy="268" r="2.2"/><circle cx="262" cy="306" r="2.2"/></g></svg>
+      <span class="mw-cap g"><span class="d"></span><span data-i18n="vizNature">Built with nature</span></span>
+    </div>
+    <a class="split-text" href="nature-based-solutions.html">
+      <p class="split-title"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3c1 4-4 6-4 11a4 4 0 0 0 8 0c0-2-1-3-2-4M12 21V11"/></svg></span><span data-i18n="p2title">Nature-based solutions</span></p>
+      <p class="split-body" data-i18n="p2body">We design with the planet: wetland buffers, green infrastructure, and restored ecosystems that protect coastlines and cities on their own.</p>
+      <span class="learn" data-i18n="learn">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+  </div>
+</section>
+
+<!-- ============ 05 · DRM CYCLE ============ -->
+<section class="dark-sec linkable" onclick="location.href='disaster-risk-management.html'">
+  <p class="sec-eyebrow" data-i18n="cyEyebrow">Disaster risk management</p>
+  <h2 class="sec-title" data-i18n="cyTitle">The full cycle — before, during, and after the hit.</h2>
+  <div class="cycle-grid">
+    <div class="glass cycle-chip"><span class="ci"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg></span><p class="ct" data-i18n="cy1t">Mitigation</p><p class="cd" data-i18n="cy1d">Reduce risk in advance</p></div>
+    <div class="glass cycle-chip"><span class="ci"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span><p class="ct" data-i18n="cy2t">Preparedness</p><p class="cd" data-i18n="cy2d">Plans and team training</p></div>
+    <div class="glass cycle-chip"><span class="ci"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v6l4-2M5 12a7 7 0 1 0 7-7"/></svg></span><p class="ct" data-i18n="cy3t">Response</p><p class="cd" data-i18n="cy3d">On-site support</p></div>
+    <div class="glass cycle-chip"><span class="ci"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4l8 4-8 4-8-4z"/><path d="M6 10v5c0 1 3 2 6 2s6-1 6-2v-5"/></svg></span><p class="ct" data-i18n="cy4t">Recovery</p><p class="cd" data-i18n="cy4d">Rapid return to normal</p></div>
+  </div>
+  <a class="sec-cta" href="disaster-risk-management.html" data-i18n="learnDRM">Explore our services <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+</section>
+
+<!-- ============ 06 · RESEARCH ============ -->
+<section class="dark-sec">
+  <div class="zz-row" style="margin-bottom:0;">
+    <a class="split-text" href="research.html">
+      <p class="sec-eyebrow" data-i18n="rsEyebrow">Research</p>
+      <p class="split-title" data-i18n="rsTitle">Science, proven in practice.</p>
+      <p class="split-body" data-i18n="rsBody">We collaborate with universities, national labs, and nonprofits to pilot nature-based models and quantify their risk-reduction impact — a bridge between science and resilience practice.</p>
+      <span class="learn" data-i18n="learn">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <div class="media-window">
+      <svg viewBox="0 0 640 460" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1521"/><stop offset="1" stop-color="#05090f"/></linearGradient><radialGradient id="eGlow" cx="50%" cy="46%" r="55%"><stop offset="0" stop-color="#1c3f68"/><stop offset="1" stop-color="#1c3f68" stop-opacity="0"/></radialGradient></defs><rect width="640" height="460" fill="url(#eBg)"/><rect width="640" height="460" fill="url(#eGlow)"/><g transform="translate(320,230)" fill="none" stroke="#7FB4FF"><circle r="150" stroke-opacity=".18"/><ellipse rx="150" ry="52" stroke-opacity=".14"/><ellipse rx="150" ry="104" stroke-opacity=".12"/><ellipse rx="60" ry="150" stroke-opacity=".12"/><ellipse rx="116" ry="150" stroke-opacity=".10"/></g><g fill="none" stroke="#7FB4FF" stroke-opacity=".28" stroke-linejoin="round" stroke-linecap="round"><path d="M196 150 L300 196 L262 300 L396 316 L444 168 L300 196"/><path d="M396 316 L470 250 M262 300 L214 366 M444 168 L420 96"/></g><g fill="#9CC4FF"><circle cx="196" cy="150" r="3"/><circle cx="300" cy="196" r="4"/><circle cx="262" cy="300" r="3"/><circle cx="396" cy="316" r="3.4"/><circle cx="444" cy="168" r="3"/><circle cx="470" cy="250" r="2.4"/><circle cx="214" cy="366" r="2.4"/><circle cx="420" cy="96" r="2.4"/></g><circle cx="300" cy="196" r="10" fill="none" stroke="#7FB4FF" stroke-opacity=".5"/></svg>
+      <span class="mw-cap"><span class="d"></span><span data-i18n="vizScience">Science network</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 · CTA + FOOTER ============ -->
+<section class="cta-sec">
+  <h2 class="cta-title" data-i18n="ctaTitle">Ready to build your community&rsquo;s resilience?</h2>
+  <a class="cta-btn" href="contact.html"><span data-i18n="contact">Contact us</span><span class="dot"></span></a>
+</section>
+<footer class="footer">
+  <div class="footer-top">
+    <div>
+      <a class="footer-brand" href="index.html" aria-label="Disaster Science">
+        <svg class="brand-logo" viewBox="0 0 40 56" fill="none" stroke="#7FB4FF" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4c-1.6 5-9 9.5-9 17.5 0 6.4 4 10.5 9 10.5s9-4.1 9-10.5"/><path d="M20 14v38"/></svg>
+        <span>Disaster <strong>Science</strong></span>
+      </a>
+      <p class="footer-tag" data-i18n="footTag">Strengthening community resilience through science-based solutions.</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4 data-i18n="fc1h">Explore</h4>
+        <a href="disaster-risk-management.html" data-i18n="fl1">Risk management</a>
+        <a href="nature-based-solutions.html" data-i18n="fl2">Nature-based</a>
+        <a href="research.html" data-i18n="fl3">Research</a>
+        <a href="https://www.disastersci.com/insights" target="_top" data-i18n="fl4">Insights</a>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="fc2h">Connect</h4>
+        <a href="contact.html" data-i18n="fl5">Contact</a>
+        <a href="https://www.disastersci.com/about" target="_top" data-i18n="fl6">About</a>
+        <a href="https://www.disastersci.com/insights" target="_top" data-i18n="fl4b">Insights</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Disaster Science</span>
+    <span data-i18n="footClaim">Helping Communities Thrive, Powered by Nature</span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+'use strict';
+
+/* ---------------- i18n ---------------- */
+var FLAGS = {
+  en: '<svg viewBox="0 0 60 30"><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#FFFFFF" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2.4"/><rect x="25" width="10" height="30" fill="#FFFFFF"/><rect y="10" width="60" height="10" fill="#FFFFFF"/><rect x="27" width="6" height="30" fill="#C8102E"/><rect y="12" width="60" height="6" fill="#C8102E"/></svg>',
+  ru: '<svg viewBox="0 0 3 2"><rect width="3" height="2" fill="#FFFFFF"/><rect y="0.667" width="3" height="1.333" fill="#0039A6"/><rect y="1.333" width="3" height="0.667" fill="#D52B1E"/></svg>',
+  es: '<svg viewBox="0 0 3 2"><rect width="3" height="2" fill="#AA151B"/><rect y="0.5" width="3" height="1" fill="#F1BF00"/></svg>',
+  zh: '<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#DE2910"/><polygon points="5,2 6.18,5.63 10,5.63 6.91,7.87 8.09,11.5 5,9.26 1.91,11.5 3.09,7.87 0,5.63 3.82,5.63" fill="#FFDE00" transform="scale(0.9) translate(1.2,1)"/><circle cx="11" cy="2.5" r="0.8" fill="#FFDE00"/><circle cx="12.5" cy="5" r="0.8" fill="#FFDE00"/><circle cx="12.5" cy="8" r="0.8" fill="#FFDE00"/><circle cx="11" cy="10.5" r="0.8" fill="#FFDE00"/></svg>'
+};
+var I18N = {
+  en: {
+    name:'English', code:'EN', nav:['Home','DRM','Nature','Research','Insights'], contact:'Contact us', hint:'Scroll',
+    eyebrow:'Solutions for Tomorrow',
+    title:'When disaster strikes, <em>preparedness</em> decides everything.',
+    sub:'Disaster risk management and nature-based solutions — helping communities prepare, respond, and recover.',
+    stEyebrow:'The cost of unpreparedness', stTitle:'The cost of unpreparedness — and what changes it.',
+    s1k:'Protection gap', s1d:'Of 2024 disaster losses went uninsured — communities absorbed the blow themselves.',
+    s2k:'Preparedness pays', s2d:'Every dollar invested in preparedness saves thirteen after disaster strikes.',
+    s3k:'Powered by nature', s3u:' billion/yr', s3d:'In flood damage is prevented by mangroves each year — nature already works as a shield.',
+    mediaLabel:'Photo or video', partnersLabel:'Partner logos',
+    vizCoast:'Coastal exposure', vizReturn:'Return on readiness', vizShield:'Nature as shield', vizRisk:'Risk, mapped', vizNature:'Built with nature', vizScience:'Science network',
+    src:'Sources: Swiss Re Institute (2024) · U.S. Chamber of Commerce / Allstate · Menéndez et al., Scientific Reports (2020)',
+    apEyebrow:'Our approach', apTitle:'We design with the planet, not against it.',
+    apLead:'By restoring the balance between human development and natural systems, we build environments that heal, protect, and empower communities — designing with the planet, not against it.',
+    p1title:'Disaster risk management', p1body:'We turn the latest disaster research into your operational advantage — adaptive, cost-effective solutions that deliver measurable resilience across the full cycle, from mitigation to recovery.',
+    p2title:'Nature-based solutions', p2body:'Nature is the most reliable defense we have. We blend ecological design, climate data, and community collaboration into adaptive systems that protect coastlines and cities — and grow stronger with time.',
+    cyEyebrow:'Disaster risk management', cyTitle:'The full cycle — before, during, and after the hit.',
+    cy1t:'Mitigation', cy1d:'Access funding and cut risk before disaster strikes', cy2t:'Preparedness', cy2d:'Plans and training that turn readiness into performance',
+    cy3t:'Response', cy3d:'Respond swiftly and confidently to any crisis', cy4t:'Recovery', cy4d:'Secure grants and build back smarter',
+    rsEyebrow:'Research', rsTitle:'Science, proven in practice.', rsBody:'We collaborate with universities, national labs, and nonprofits to pilot new nature-based models and quantify their disaster-risk-reduction benefits — bridging applied science and practice.',
+    learn:'Learn more', learnNature:'Explore nature-based solutions', learnDRM:'Explore our services', learnResearch:'See the science behind our work',
+    ctaTitle:'Ready to build your community’s resilience?',
+    footTag:'Strengthening community resilience through science-based solutions.',
+    fc1h:'Explore', fc2h:'Connect', fl1:'Risk management', fl2:'Nature-based', fl3:'Research', fl4:'Insights', fl4b:'Insights', fl5:'Contact', fl6:'About',
+    footClaim:'Helping Communities Thrive, Powered by Nature'
+  },
+  ru: {
+    name:'Русский', code:'RU', nav:['Главная','DRM','Природа','Исследования','Insights'], contact:'Связаться', hint:'Листайте',
+    eyebrow:'Solutions for Tomorrow',
+    title:'Когда приходит стихия, <em>готовность</em> решает всё.',
+    sub:'Управление рисками катастроф и природные решения — помогаем сообществам готовиться, отвечать и восстанавливаться.',
+    stEyebrow:'Цена неготовности', stTitle:'Цена неготовности — и что её меняет.',
+    s1k:'Разрыв защиты', s1d:'Потерь от катастроф 2024 года не были застрахованы — удар приняли сами сообщества.',
+    s2k:'Готовность окупается', s2d:'Каждый доллар, вложенный в готовность, экономит тринадцать после удара стихии.',
+    s3k:'Сила природы', s3u:' млрд/год', s3d:'Ущерба от наводнений предотвращают мангровые леса — природа уже работает щитом.',
+    mediaLabel:'Фото или видео', partnersLabel:'Логотипы партнёров',
+    vizCoast:'Прибрежные риски', vizReturn:'Отдача от готовности', vizShield:'Природа как щит', vizRisk:'Карта рисков', vizNature:'Строим с природой', vizScience:'Научная сеть',
+    src:'Источники: Swiss Re Institute (2024) · U.S. Chamber of Commerce / Allstate · Menéndez et al., Scientific Reports (2020)',
+    apEyebrow:'Наш подход', apTitle:'Мы проектируем вместе с планетой, а не против неё.',
+    apLead:'Восстанавливая баланс между застройкой и природными системами, мы создаём среду, которая лечит, защищает и укрепляет сообщества — проектируя вместе с планетой, а не против неё.',
+    p1title:'Управление рисками катастроф', p1body:'Превращаем новейшие исследования катастроф в ваше практическое преимущество — гибкие и экономичные решения с измеримой устойчивостью на всех этапах: от митигации до восстановления.',
+    p2title:'Природные решения', p2body:'Природа — самая надёжная защита. Мы соединяем экологический дизайн, климатические данные и работу с сообществами в адаптивные системы, которые защищают побережья и города и со временем становятся только прочнее.',
+    cyEyebrow:'Управление рисками', cyTitle:'Полный цикл — до, во время и после удара.',
+    cy1t:'Митигация', cy1d:'Привлекаем финансирование и снижаем риск до удара', cy2t:'Подготовка', cy2d:'Планы и обучение, превращающие готовность в результат',
+    cy3t:'Реагирование', cy3d:'Быстро и уверенно реагируем на любой кризис', cy4t:'Восстановление', cy4d:'Получаем гранты и восстанавливаемся с умом',
+    rsEyebrow:'Исследования', rsTitle:'Наука, проверенная практикой.', rsBody:'Сотрудничаем с университетами, нацлабораториями и НКО: пилотируем новые природные модели и измеряем их вклад в снижение рисков катастроф — мост между наукой и практикой.',
+    learn:'Подробнее', learnNature:'Перейти к природным решениям', learnDRM:'Смотреть услуги', learnResearch:'Наука за нашей работой',
+    ctaTitle:'Готовы строить устойчивость вашего сообщества?',
+    footTag:'Укрепляем устойчивость сообществ через научно обоснованные решения.',
+    fc1h:'Разделы', fc2h:'Контакты', fl1:'Управление рисками', fl2:'Природные решения', fl3:'Исследования', fl4:'Insights', fl4b:'Insights', fl5:'Связаться', fl6:'О нас',
+    footClaim:'Helping Communities Thrive, Powered by Nature'
+  },
+  es: {
+    name:'Español', code:'ES', nav:['Inicio','DRM','Naturaleza','Investigación','Insights'], contact:'Contacto', hint:'Desliza',
+    eyebrow:'Solutions for Tomorrow',
+    title:'Cuando llega el desastre, la <em>preparación</em> lo decide todo.',
+    sub:'Gestión de riesgos de desastres y soluciones basadas en la naturaleza: ayudamos a las comunidades a prepararse, responder y recuperarse.',
+    stEyebrow:'El costo de la falta de preparación', stTitle:'El costo de no estar preparados — y qué lo cambia.',
+    s1k:'Brecha de protección', s1d:'De las pérdidas por desastres de 2024 no estaban aseguradas — las comunidades asumieron el golpe.',
+    s2k:'Prepararse rinde', s2d:'Cada dólar invertido en preparación ahorra trece tras el desastre.',
+    s3k:'El poder de la naturaleza', s3u:' mil M/año', s3d:'En daños por inundaciones evitan los manglares cada año — la naturaleza ya actúa como escudo.',
+    mediaLabel:'Foto o video', partnersLabel:'Logos de socios',
+    vizCoast:'Exposición costera', vizReturn:'Retorno de la preparación', vizShield:'La naturaleza como escudo', vizRisk:'Riesgo cartografiado', vizNature:'Construido con la naturaleza', vizScience:'Red científica',
+    src:'Fuentes: Swiss Re Institute (2024) · U.S. Chamber of Commerce / Allstate · Menéndez et al., Scientific Reports (2020)',
+    apEyebrow:'Nuestro enfoque', apTitle:'Diseñamos con el planeta, no contra él.',
+    apLead:'Al restaurar el equilibrio entre el desarrollo humano y los sistemas naturales, creamos entornos que sanan, protegen y fortalecen a las comunidades — diseñando con el planeta, no contra él.',
+    p1title:'Gestión de riesgos de desastres', p1body:'Convertimos la investigación más reciente sobre desastres en tu ventaja operativa: soluciones adaptables y rentables con resiliencia medible en todo el ciclo, de la mitigación a la recuperación.',
+    p2title:'Soluciones basadas en la naturaleza', p2body:'La naturaleza es la defensa más fiable. Combinamos diseño ecológico, datos climáticos y colaboración comunitaria en sistemas adaptativos que protegen costas y ciudades — y se fortalecen con el tiempo.',
+    cyEyebrow:'Gestión de riesgos', cyTitle:'El ciclo completo — antes, durante y después del impacto.',
+    cy1t:'Mitigación', cy1d:'Conseguir financiación y reducir el riesgo antes del impacto', cy2t:'Preparación', cy2d:'Planes y capacitación que convierten la preparación en desempeño',
+    cy3t:'Respuesta', cy3d:'Responder con rapidez y confianza a cualquier crisis', cy4t:'Recuperación', cy4d:'Conseguir subvenciones y reconstruir mejor',
+    rsEyebrow:'Investigación', rsTitle:'Ciencia, comprobada en la práctica.', rsBody:'Colaboramos con universidades, laboratorios nacionales y ONG para pilotar nuevos modelos basados en la naturaleza y cuantificar sus beneficios en la reducción del riesgo — un puente entre ciencia y práctica.',
+    learn:'Saber más', learnNature:'Ver soluciones basadas en la naturaleza', learnDRM:'Ver nuestros servicios', learnResearch:'La ciencia detrás de nuestro trabajo',
+    ctaTitle:'¿Listo para fortalecer la resiliencia de tu comunidad?',
+    footTag:'Fortalecemos la resiliencia comunitaria con soluciones basadas en la ciencia.',
+    fc1h:'Explorar', fc2h:'Conectar', fl1:'Gestión de riesgos', fl2:'Naturaleza', fl3:'Investigación', fl4:'Insights', fl4b:'Insights', fl5:'Contacto', fl6:'Nosotros',
+    footClaim:'Helping Communities Thrive, Powered by Nature'
+  },
+  zh: {
+    name:'中文', code:'ZH', nav:['首页','风险管理','自然方案','研究','洞察'], contact:'联系我们', hint:'滑动',
+    eyebrow:'Solutions for Tomorrow',
+    title:'灾难来临时，<em>准备</em>决定一切。',
+    sub:'灾害风险管理与自然解决方案——帮助社区做好准备、有效应对、快速恢复。',
+    stEyebrow:'缺乏准备的代价', stTitle:'缺乏准备的代价——以及如何改变。',
+    s1k:'保障缺口', s1d:'2024 年灾害损失中未投保的比例——由社区自行承担冲击。',
+    s2k:'未雨绸缪的回报', s2d:'每投入一美元用于备灾，灾后可节省十三美元。',
+    s3k:'自然的力量', s3u:' 亿/年', s3d:'红树林每年可减少的洪灾损失——自然本身就是屏障。',
+    mediaLabel:'照片或视频', partnersLabel:'合作伙伴标识',
+    vizCoast:'海岸暴露', vizReturn:'备灾回报', vizShield:'自然屏障', vizRisk:'风险地图', vizNature:'与自然共建', vizScience:'科研网络',
+    src:'来源：Swiss Re Institute (2024) · 美国商会 / Allstate · Menéndez 等，《Scientific Reports》(2020)',
+    apEyebrow:'我们的方法', apTitle:'我们与地球共同设计，而非与之对抗。',
+    apLead:'通过恢复人类发展与自然系统之间的平衡，我们营造出能够修复、保护并赋能社区的环境——与地球共同设计，而非与之对抗。',
+    p1title:'灾害风险管理', p1body:'我们把最新的灾害研究转化为您的实战优势：贯穿减灾到恢复全周期、灵活且高性价比的方案，带来可衡量的韧性。',
+    p2title:'基于自然的解决方案', p2body:'自然是最可靠的防线。我们将生态设计、气候数据与社区协作融为自适应系统，守护海岸与城市，并随时间愈发坚固。',
+    cyEyebrow:'灾害风险管理', cyTitle:'完整周期——冲击之前、之中与之后。',
+    cy1t:'减灾', cy1d:'争取资金，在灾害来临前降低风险', cy2t:'准备', cy2d:'预案与培训，让准备转化为成效',
+    cy3t:'响应', cy3d:'对任何危机迅速而从容地响应', cy4t:'恢复', cy4d:'争取拨款，更聪明地重建',
+    rsEyebrow:'研究', rsTitle:'经实践检验的科学。', rsBody:'我们与高校、国家实验室及非营利组织合作，试点新的自然方案并量化其降低灾害风险的成效——架起应用科学与实践的桥梁。',
+    learn:'了解更多', learnNature:'查看自然方案', learnDRM:'查看我们的服务', learnResearch:'我们工作背后的科学',
+    ctaTitle:'准备好增强您社区的韧性了吗？',
+    footTag:'以科学为基础的方案增强社区韧性。',
+    fc1h:'栏目', fc2h:'联系', fl1:'风险管理', fl2:'自然方案', fl3:'研究', fl4:'洞察', fl4b:'洞察', fl5:'联系我们', fl6:'关于我们',
+    footClaim:'Helping Communities Thrive, Powered by Nature'
+  }
+};
+var LANG = 'en';
+
+function applyLang(l) {
+  if (!I18N[l]) return;
+  LANG = l;
+  var L = I18N[l];
+  document.documentElement.lang = l;
+  // nav
+  var navLinks = document.querySelectorAll('#nav .nav-link');
+  for (var i = 0; i < navLinks.length; i++) navLinks[i].textContent = L.nav[i];
+  document.getElementById('contact-txt').textContent = L.contact;
+  // generic [data-i18n] -> textContent, [data-i18n-html] -> innerHTML
+  var t = document.querySelectorAll('[data-i18n]');
+  for (var j = 0; j < t.length; j++) {
+    var k = t[j].getAttribute('data-i18n');
+    if (L[k] == null) continue;
+    var first = t[j].firstChild;
+    if (first && first.nodeType === 3) { first.nodeValue = L[k]; }        // replace leading text, keep any icon/child
+    else { t[j].insertBefore(document.createTextNode(L[k]), t[j].firstChild); }
+  }
+  var h = document.querySelectorAll('[data-i18n-html]');
+  for (var m = 0; m < h.length; m++) {
+    var hk = h[m].getAttribute('data-i18n-html');
+    if (L[hk] != null) h[m].innerHTML = L[hk];
+  }
+  document.getElementById('lang-flag').innerHTML = FLAGS[l];
+  document.getElementById('lang-code').textContent = L.code;
+  renderLangMenu();
+  reportHeight();
+}
+function renderLangMenu() {
+  var menu = document.getElementById('lang-menu');
+  menu.innerHTML = '';
+  ['en','ru','es','zh'].forEach(function (l) {
+    var item = document.createElement('div');
+    item.className = 'lang-item' + (l === LANG ? ' sel' : '');
+    item.innerHTML = '<span class="flag">' + FLAGS[l] + '</span><span>' + I18N[l].name + '</span>';
+    item.addEventListener('click', function () { applyLang(l); document.getElementById('lang').classList.remove('open'); });
+    menu.appendChild(item);
+  });
+}
+document.getElementById('lang-btn').addEventListener('click', function (e) {
+  e.stopPropagation();
+  document.getElementById('lang').classList.toggle('open');
+});
+document.addEventListener('click', function () { document.getElementById('lang').classList.remove('open'); });
+applyLang('en');
+
+/* ---------------- height reporting (for Wix / iframe embed auto-height) ---------------- */
+var lastH = 0;
+function reportHeight() {
+  try {
+    var h = Math.ceil(document.documentElement.scrollHeight);
+    if (h && Math.abs(h - lastH) > 2) {
+      lastH = h;
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'setHeight', height: h }, '*');
+      }
+    }
+  } catch (e) {}
+}
+window.addEventListener('load', reportHeight);
+window.addEventListener('resize', reportHeight);
+if (window.ResizeObserver) { try { new ResizeObserver(reportHeight).observe(document.body); } catch (e) {} }
+setTimeout(reportHeight, 400);
+setTimeout(reportHeight, 1500);
+
+/* ---------------- 3D Earth (hero) ---------------- */
+var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var MAPS = {
+  day:   ['https://cdn.jsdelivr.net/gh/vasturiano/three-globe@master/example/img/earth-blue-marble.jpg','https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-blue-marble.jpg'],
+  night: ['https://cdn.jsdelivr.net/gh/vasturiano/three-globe@master/example/img/earth-night.jpg','https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-night.jpg'],
+  spec:  ['https://cdn.jsdelivr.net/gh/vasturiano/three-globe@master/example/img/earth-water.png','https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-water.png'],
+  clouds:['https://cdn.jsdelivr.net/gh/turban/webgl-earth@master/images/fair_clouds_4k.png','https://raw.githubusercontent.com/turban/webgl-earth/master/images/fair_clouds_4k.png']
+};
+var hero = document.getElementById('hero');
+var canvas = document.getElementById('scene');
+function heroW(){ return hero.clientWidth; }
+function heroH(){ return hero.clientHeight; }
+
+if (window.THREE) {
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(heroW(), heroH());
+  var MAX_ANISO = renderer.capabilities.getMaxAnisotropy();
+  var scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x030407);
+  var camera = new THREE.PerspectiveCamera(38, heroW() / heroH(), 0.05, 100);
+  camera.position.set(0.55, -0.10, 2.35);
+  var sunDir = new THREE.Vector3(-1.7, 0.25, -0.78).normalize();
+
+  var texLoader = new THREE.TextureLoader();
+  texLoader.setCrossOrigin('anonymous');
+  function prepTex(tex, isColor){ if (isColor) tex.encoding = THREE.sRGBEncoding; tex.anisotropy = MAX_ANISO; return tex; }
+  function loadWithFallback(urls, isColor, onDone){
+    var attempt = 0;
+    (function tryNext(){
+      if (attempt >= urls.length){ onDone(null); return; }
+      var url = urls[attempt]; attempt++;
+      texLoader.load(url, function(tex){ onDone(prepTex(tex, isColor)); }, undefined, tryNext);
+    })();
+  }
+  var earthUniforms = {
+    dayTexture:{value:null}, nightTexture:{value:null}, specTexture:{value:null},
+    sunDirection:{value:sunDir}, uHasTex:{value:0.0}
+  };
+  function texArrived(slot){ return function(tex){ if(!tex) return; earthUniforms[slot].value = tex; if(earthUniforms.dayTexture.value && earthUniforms.nightTexture.value) earthUniforms.uHasTex.value = 1.0; }; }
+  loadWithFallback(MAPS.day, true, texArrived('dayTexture'));
+  loadWithFallback(MAPS.night, true, texArrived('nightTexture'));
+  loadWithFallback(MAPS.spec, false, texArrived('specTexture'));
+
+  var planet = new THREE.Group(); scene.add(planet);
+  var earthMat = new THREE.ShaderMaterial({
+    uniforms: earthUniforms,
+    vertexShader:['varying vec2 vUv;','varying vec3 vNormalW;','varying vec3 vPosW;','void main(){','vUv=uv;','vNormalW=normalize(mat3(modelMatrix)*normal);','vPosW=(modelMatrix*vec4(position,1.0)).xyz;','gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);','}'].join('\n'),
+    fragmentShader:['uniform sampler2D dayTexture;','uniform sampler2D nightTexture;','uniform sampler2D specTexture;','uniform vec3 sunDirection;','uniform float uHasTex;','varying vec2 vUv;','varying vec3 vNormalW;','varying vec3 vPosW;','void main(){','vec3 N=normalize(vNormalW);','float sunDot=dot(N,normalize(sunDirection));','float dayAmt=smoothstep(-0.12,0.35,sunDot);','vec3 dayCol; vec3 lights; float specMask;','if(uHasTex>0.5){','dayCol=texture2D(dayTexture,vUv).rgb;','lights=texture2D(nightTexture,vUv).rgb;','specMask=texture2D(specTexture,vUv).r;','}else{','float lat=smoothstep(0.0,1.0,vUv.y);','dayCol=mix(vec3(0.016,0.045,0.085),vec3(0.05,0.10,0.16),lat);','lights=vec3(0.0);','specMask=0.35;','}','float rim=smoothstep(-0.12,0.12,sunDot)*(1.0-smoothstep(0.12,0.45,sunDot));','dayCol=mix(dayCol,dayCol*vec3(1.25,0.85,0.6),rim*0.85);','vec3 moonlit=dayCol*vec3(0.10,0.13,0.18);','vec3 nightCol=moonlit+pow(lights,vec3(1.2))*vec3(1.55,1.1,0.6)*1.9;','vec3 color=mix(nightCol,dayCol,dayAmt);','vec3 V=normalize(cameraPosition-vPosW);','vec3 H=normalize(normalize(sunDirection)+V);','float spec=pow(max(dot(N,H),0.0),24.0)*specMask;','color+=spec*vec3(0.55,0.65,0.75)*dayAmt;','float fres=pow(1.0-max(dot(N,V),0.0),2.6);','color+=fres*vec3(0.24,0.42,0.75)*(0.45+0.55*dayAmt);','gl_FragColor=vec4(color,1.0);','}'].join('\n')
+  });
+  var earth = new THREE.Mesh(new THREE.SphereGeometry(1,128,128), earthMat);
+  earth.rotation.y = 3.9; planet.add(earth);
+
+  var cloudUniforms = { cloudTexture:{value:null}, sunDirection:{value:sunDir}, uOpacity:{value:1.0} };
+  var cloudsMesh = null;
+  loadWithFallback(MAPS.clouds, true, function(tex){
+    if(!tex) return;
+    cloudUniforms.cloudTexture.value = tex;
+    var cloudMat = new THREE.ShaderMaterial({
+      uniforms: cloudUniforms, transparent:true, depthWrite:false,
+      vertexShader:['varying vec2 vUv;','varying vec3 vNormalW;','void main(){','vUv=uv;','vNormalW=normalize(mat3(modelMatrix)*normal);','gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);','}'].join('\n'),
+      fragmentShader:['uniform sampler2D cloudTexture;','uniform vec3 sunDirection;','uniform float uOpacity;','varying vec2 vUv;','varying vec3 vNormalW;','void main(){','vec4 c=texture2D(cloudTexture,vUv);','float lit=smoothstep(-0.15,0.3,dot(normalize(vNormalW),normalize(sunDirection)));','vec3 col=mix(vec3(0.10,0.14,0.22),vec3(1.0),lit);','float a=c.a*uOpacity*(0.16+0.84*lit);','gl_FragColor=vec4(col,a);','}'].join('\n')
+    });
+    cloudsMesh = new THREE.Mesh(new THREE.SphereGeometry(1.012,128,128), cloudMat);
+    cloudsMesh.rotation.y = 3.9; planet.add(cloudsMesh);
+  });
+
+  var glowMat = new THREE.ShaderMaterial({
+    uniforms:{ sunDirection:{value:sunDir} }, side:THREE.BackSide, transparent:true,
+    blending:THREE.AdditiveBlending, depthWrite:false,
+    vertexShader:['varying vec3 vNormalW;','varying vec3 vPosW;','void main(){','vNormalW=normalize(mat3(modelMatrix)*normal);','vPosW=(modelMatrix*vec4(position,1.0)).xyz;','gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);','}'].join('\n'),
+    fragmentShader:['uniform vec3 sunDirection;','varying vec3 vNormalW;','varying vec3 vPosW;','void main(){','vec3 V=normalize(cameraPosition-vPosW);','float intensity=pow(0.62-dot(normalize(vNormalW),V),3.2);','float lit=0.55+0.45*max(dot(normalize(vNormalW),normalize(sunDirection)),0.0);','gl_FragColor=vec4(vec3(0.35,0.6,1.0)*intensity*lit,intensity);','}'].join('\n')
+  });
+  planet.add(new THREE.Mesh(new THREE.SphereGeometry(1.035,96,96), glowMat));
+
+  (function stars(){
+    var COUNT = 2600, pos = new Float32Array(COUNT*3);
+    for (var i=0;i<COUNT;i++){
+      var r=30+Math.random()*40, t=Math.random()*Math.PI*2, p=Math.acos(2*Math.random()-1);
+      pos[i*3]=r*Math.sin(p)*Math.cos(t); pos[i*3+1]=r*Math.sin(p)*Math.sin(t); pos[i*3+2]=r*Math.cos(p);
+    }
+    var g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    var m=new THREE.PointsMaterial({ color:0xcfd8ea, size:0.055, sizeAttenuation:true, transparent:true, opacity:0.85, depthWrite:false });
+    scene.add(new THREE.Points(g,m));
+  })();
+
+  var mx = 0, my = 0;
+  window.addEventListener('mousemove', function(e){ mx=(e.clientX/window.innerWidth-0.5); my=(e.clientY/window.innerHeight-0.5); });
+  function fit(){
+    renderer.setSize(heroW(), heroH());
+    camera.aspect = heroW()/Math.max(1,heroH());
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', fit);
+
+  var clock = new THREE.Clock();
+  (function tick(){
+    requestAnimationFrame(tick);
+    var dt = Math.min(clock.getDelta(), 0.05);
+    if (!reduceMotion){
+      earth.rotation.y += 0.0105 * dt;
+      if (cloudsMesh) cloudsMesh.rotation.y += 0.0140 * dt;
+    }
+    camera.position.x = 0.55 + mx * 0.05;
+    camera.position.y = -0.10 - my * 0.05;
+    camera.lookAt(0, 0, 0);
+    renderer.render(scene, camera);
+  })();
+}
+})();
+</script>
+</body>
+</html>
